@@ -1,11 +1,20 @@
 package coffee;
 
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class CoffeeMachine {
     private static Scanner scanner;
-    protected static final int[] SUPPLY = new int[] {400, 540, 120, 9, 550}; // [water,milk,beans,cups, money]
+    private int[] SUPPLY = new int[] {400, 540, 120, 9, 550}; // [water,milk,beans,cups, money]
+
+    public CoffeeMachine() {
+    }
+
+    public CoffeeMachine(int[] supply) {
+        this.SUPPLY = supply;
+    }
+
 
     public int getWater() {
         return SUPPLY[0];
@@ -44,29 +53,31 @@ public class CoffeeMachine {
         System.out.printf("%d ml of milk\n", getMilk());
         System.out.printf("%d g of coffee beans\n", getBeans());
         System.out.printf("%d disposable cups\n", getCups());
-        System.out.printf("$%d of money\n", getMoney());
-        System.out.println();
+        System.out.printf("$%d of money\n\n", getMoney());
     }
-    public void fill(){
-        formattedInput("Write how many ml of water you want to add:");
-        setWater(getWater() + scanner.nextInt());
-        formattedInput("Write how many ml of milk you want to add:");
-        setMilk(getMilk() + scanner.nextInt());
-        formattedInput("Write how many grams of coffee beans you want to add:");
-        setBeans(getBeans() + scanner.nextInt());
-        formattedInput("Write how many disposable cups you want to add:");
-        setCups(getCups() + scanner.nextInt());
+    public void fill () throws InputMismatchException {
+        try {
+            formattedInput("Write how many ml of water you want to add:");
+            setWater(getWater() + scanner.nextInt());
+            formattedInput("Write how many ml of milk you want to add:");
+            setMilk(getMilk() + scanner.nextInt());
+            formattedInput("Write how many grams of coffee beans you want to add:");
+            setBeans(getBeans() + scanner.nextInt());
+            formattedInput("Write how many disposable cups you want to add:");
+            setCups(getCups() + scanner.nextInt());
+        }
+        catch (InputMismatchException e) {
+            System.out.println("Wrong input! Must be an integer\n");
+        }
     }
 
     public void take(){
-        System.out.printf("I gave you $%d\n", getMoney());
-        System.out.println();
+        System.out.printf("I gave you $%d\n\n", getMoney());
         setMoney(0);
     }
 
-    public static void formattedInput(String s){
-        System.out.println(s);
-        System.out.print("> ");
+    public void formattedInput(String s){
+        System.out.printf("%s\n>",s);
     }
 
     public void buy(int[] SUPPLY, int[] cup){
@@ -84,8 +95,7 @@ public class CoffeeMachine {
                 return;
             }
         }
-        System.out.println("I have enough resources, making you a coffee!");
-        System.out.println();
+        System.out.println("I have enough resources, making you a coffee!\n");
         SUPPLY[4] += cup[4]; // getting paid for the coffee
 
     }
@@ -100,13 +110,13 @@ public class CoffeeMachine {
                 String choice = scanner.nextLine();
                 switch (choice) {
                     case "1":
-                        Espresso espresso = new Espresso();
+                        Espresso espresso = new Espresso(SUPPLY);
                         break;
                     case "2":
-                        Latte latte = new Latte();
+                        Latte latte = new Latte(SUPPLY);
                         break;
                     case "3":
-                        Cappuccino cappuccino = new Cappuccino();
+                        Cappuccino cappuccino = new Cappuccino(SUPPLY);
                         break;
                     case "back":
                         break;
@@ -128,4 +138,5 @@ public class CoffeeMachine {
         CoffeeMachine machine = new CoffeeMachine();
         machine.operate();
     }
+
 }
