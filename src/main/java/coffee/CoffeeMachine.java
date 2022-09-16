@@ -12,10 +12,10 @@ public class CoffeeMachine {
     private Map<String, Integer> supply = new HashMap<>(
             Map.of(
                     "water", 400,
-                    "milk", 200,
-                    "beans", 100,
-                    "cups", 10,
-                    "money",500)
+                    "milk", 540,
+                    "beans", 120,
+                    "cups", 9,
+                    "money",550)
     );
 
     public CoffeeMachine() {
@@ -57,7 +57,7 @@ public class CoffeeMachine {
         supply.replace("money",money);
     }
 
-    public void status(){
+    private void status(){
         System.out.println("The coffee machine has: ");
         System.out.printf("%d ml of water\n", getWater());
         System.out.printf("%d ml of milk\n", getMilk());
@@ -65,7 +65,7 @@ public class CoffeeMachine {
         System.out.printf("%d disposable cups\n", getCups());
         System.out.printf("$%d of money\n\n", getMoney());
     }
-    public void fill () throws InputMismatchException {
+    private void fill () throws InputMismatchException {
         try {
             formattedInput("Write how many ml of water you want to add:");
             setWater(getWater() + scanner.nextInt());
@@ -75,64 +75,76 @@ public class CoffeeMachine {
             setBeans(getBeans() + scanner.nextInt());
             formattedInput("Write how many disposable cups you want to add:");
             setCups(getCups() + scanner.nextInt());
+            System.out.println();
         }
         catch (InputMismatchException e) {
             System.out.println("Wrong input! Must be an integer\n");
         }
     }
 
-    public void take(){
+    private void take(){
         System.out.printf("I gave you $%d\n\n", getMoney());
         setMoney(0);
     }
 
-    public void formattedInput(String s){
+    private void formattedInput(String s){
         System.out.printf("%s\n>",s);
     }
 
-    public void buy(Map<String,Integer> supply, Map<String,Integer> cup){
+    private boolean checkSupply(Map<String,Integer> supply, Map<String,Integer> cup){
         for(String el : supply.keySet()) {
-            if (supply.get(el) >= cup.get(el))
-            {
-                if("money".equals(el)){
-                    supply.replace(el, supply.get(el) + cup.get(el));
-                } else {
-                    supply.replace(el, supply.get(el) - cup.get(el));
-                }
-            } else {
+            if (supply.get(el) < cup.get(el)) {
                 switch (el) {
-                    case "water" -> System.out.println("Sorry, not enough water!");
-                    case "milk" -> System.out.println("Sorry, not enough milk!");
-                    case "beans" -> System.out.println("Sorry, not enough beans!");
-                    case "cups" -> System.out.println("Sorry, not enough cups!");
+                    case "water" -> System.out.println("Sorry, not enough water!\n");
+                    case "milk" -> System.out.println("Sorry, not enough milk!\n");
+                    case "beans" -> System.out.println("Sorry, not enough beans!\n");
+                    case "cups" -> System.out.println("Sorry, not enough cups!\n");
                 }
-                return;
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void makeCoffee(Map<String,Integer> supply, Map<String,Integer> cup){
+        for(String el : supply.keySet()) {
+            if("money".equals(el)) {
+                supply.replace(el, supply.get(el) + cup.get(el));
+            } else {
+                supply.replace(el, supply.get(el) - cup.get(el));
             }
         }
         System.out.println("I have enough resources, making you a coffee!\n");
-
     }
 
-    public void operate(){
+    protected void buy(Map<String,Integer> supply, Map<String,Integer> cup){;
+        if (checkSupply(supply,cup)) {
+            makeCoffee(supply,cup);
+        }
+    }
+
+    private void operate(){
         scanner = new Scanner(System.in);
         formattedInput("Write action (buy, fill, take, remaining, exit):");
         String action = scanner.nextLine();
         switch (action) {
             case "buy" -> {
+                System.out.println();
                 formattedInput("What do you want to buy? 1 - espresso, 2 - latte, 3 - cappuccino, back - to main menu: ");
                 String choice = scanner.nextLine();
                 switch (choice) {
-                    case "1":
+                    case "1" -> {
                         Espresso espresso = new Espresso(supply);
-                        break;
-                    case "2":
+                    }
+                    case "2" -> {
                         Latte latte = new Latte(supply);
-                        break;
-                    case "3":
+                    }
+                    case "3" -> {
                         Cappuccino cappuccino = new Cappuccino(supply);
-                        break;
-                    case "back":
-                        break;
+                    }
+                    case "back" -> System.out.println();
+
+                    default -> System.out.println("Wrong input!\n");
                 }
             }
             case "fill" -> fill();
@@ -143,6 +155,8 @@ public class CoffeeMachine {
                 System.out.println("Auf Wiedersehen!");
                 return;
             }
+            default -> System.out.println("Wrong input!\n");
+
         }
         operate();
     }
