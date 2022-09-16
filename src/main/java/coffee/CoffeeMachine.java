@@ -1,50 +1,60 @@
 package coffee;
 
 
+
+import java.util.HashMap;
 import java.util.InputMismatchException;
+import java.util.Map;
 import java.util.Scanner;
 
 public class CoffeeMachine {
     private static Scanner scanner;
-    private int[] SUPPLY = new int[] {400, 540, 120, 9, 550}; // [water,milk,beans,cups, money]
+    private Map<String, Integer> supply = new HashMap<>(
+            Map.of(
+                    "water", 400,
+                    "milk", 200,
+                    "beans", 100,
+                    "cups", 10,
+                    "money",500)
+    );
 
     public CoffeeMachine() {
     }
 
-    public CoffeeMachine(int[] supply) {
-        this.SUPPLY = supply;
+    public CoffeeMachine(HashMap<String, Integer> supply) {
+        this.supply = supply;
     }
 
 
     public int getWater() {
-        return SUPPLY[0];
+        return supply.get("water");
     }
     public void setWater(int water) {
-        SUPPLY[0] = water;
+        supply.replace("water",water);
     }
     public int getMilk() {
-        return SUPPLY[1];
+        return supply.get("milk");
     }
     public void setMilk(int milk) {
-        SUPPLY[1] = milk;
+        supply.replace("milk",milk);
     }
     public int getBeans() {
-        return SUPPLY[2];
+        return supply.get("beans");
     }
     public void setBeans(int beans) {
-        SUPPLY[2] = beans;
+        supply.replace("beans",beans);
     }
     public int getCups() {
-        return SUPPLY[3];
+        return supply.get("cups");
     }
     public void setCups(int cups) {
-        SUPPLY[3] = cups;
+        supply.replace("cups",cups);
     }
     public int getMoney(){
-        return SUPPLY[4];
+        return supply.get("money");
     }
     public void setMoney(int money){
-        SUPPLY[4] = money;
+        supply.replace("money",money);
     }
 
     public void status(){
@@ -80,23 +90,26 @@ public class CoffeeMachine {
         System.out.printf("%s\n>",s);
     }
 
-    public void buy(int[] SUPPLY, int[] cup){
-        for(int i = 0; i < SUPPLY.length-1; i++) {
-            if (SUPPLY[i] >= cup[i])
+    public void buy(Map<String,Integer> supply, Map<String,Integer> cup){
+        for(String el : supply.keySet()) {
+            if (supply.get(el) >= cup.get(el))
             {
-                SUPPLY[i] -= cup[i];
+                if("money".equals(el)){
+                    supply.replace(el, supply.get(el) + cup.get(el));
+                } else {
+                    supply.replace(el, supply.get(el) - cup.get(el));
+                }
             } else {
-                switch (i) {
-                    case 0 -> System.out.println("Sorry, not enough water!");
-                    case 1 -> System.out.println("Sorry, not enough milk!");
-                    case 2 -> System.out.println("Sorry, not enough beans!");
-                    case 3 -> System.out.println("Sorry, not enough cups!");
+                switch (el) {
+                    case "water" -> System.out.println("Sorry, not enough water!");
+                    case "milk" -> System.out.println("Sorry, not enough milk!");
+                    case "beans" -> System.out.println("Sorry, not enough beans!");
+                    case "cups" -> System.out.println("Sorry, not enough cups!");
                 }
                 return;
             }
         }
         System.out.println("I have enough resources, making you a coffee!\n");
-        SUPPLY[4] += cup[4]; // getting paid for the coffee
 
     }
 
@@ -110,13 +123,13 @@ public class CoffeeMachine {
                 String choice = scanner.nextLine();
                 switch (choice) {
                     case "1":
-                        Espresso espresso = new Espresso(SUPPLY);
+                        Espresso espresso = new Espresso(supply);
                         break;
                     case "2":
-                        Latte latte = new Latte(SUPPLY);
+                        Latte latte = new Latte(supply);
                         break;
                     case "3":
-                        Cappuccino cappuccino = new Cappuccino(SUPPLY);
+                        Cappuccino cappuccino = new Cappuccino(supply);
                         break;
                     case "back":
                         break;
